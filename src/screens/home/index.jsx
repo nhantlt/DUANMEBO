@@ -1,93 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { Container } from 'react-bootstrap';
-import * as ProductAction from './redux';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import dataList from '../../constants/mockData';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
+import PropTypes from 'prop-types';
+import MainLayout from '../../mainLayout';
 import Heading from '../../components/Heading';
+import { dataList, dataBox, dataMebo } from '../../constants/mockData';
+import { Container, Col, Row, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import Images from '../../assets/images/banner01.jpg';
 
-const Home = () => {
-  const dispatch = useDispatch();
-  const [dataItem, setDataItem] = useState(dataList);
-  const [dataCart, setDataCart] = useState([]);
-  const [idListItem, setIdListItem] = useState([]);
-  const history = useHistory();
-  const handleLike = (val) => {
-    console.log(val, 'val');
-    const data = dataList.map(item => {
-      if (item.id === val) {
-        item.isLike = !item.isLike;
-      }
-      return item;
-    });
-    setDataItem(data);
-    const idx = idListItem && idListItem.indexOf(val);
-    if (idx !== -1) {
-      const dataItem = idListItem && idListItem.filter(item => item !== val);
-      setIdListItem(dataItem);
-    } else {
-      setIdListItem([...idListItem, val]);
-    }
-  };
+Home.propTypes = {
 
-  const addToCart = (item) => {
-    setDataCart([...dataCart, item]);
-  };
-
-  useEffect(() => {
-    if (idListItem && idListItem.length > 0) {
-      dispatch(ProductAction.favorite(idListItem));
-    }
-  }, [idListItem]);
-  useEffect(() => {
-    if (dataCart && dataCart.length > 0) {
-      dispatch(ProductAction.addToCart(dataCart));
-    }
-  }, [dataCart]);
-
-  const readerList = dataItem && dataItem.map((item) => {
-    return (
-      <div className="item" key={item?.id}>
-        <span className="icon" onClick={() => {
-          handleLike(item?.id);
-        }}>
-          <i className={`fa fa-heart ${item?.isLike ? 'active' : ''}`} aria-hidden="true"></i>
-        </span>
-        <div className="img"
-          onClick={() => history.push(`/${item.id}`)}
-          role="button"
-          onKeyDown={() => history.push(`/${item.id}`)}
-        >
-          <img src={item?.img} alt="" />
-        </div>
-        <h3 className="title"
-          onClick={() => history.push(`/${item.id}`)}
-          role="button"
-          onKeyDown={() => history.push(`/${item.id}`)}
-        >{item?.name}</h3>
-        <span className="cart" onClick={() => {
-          addToCart(item);
-        }}>
-          <i className="fa fa-shopping-cart mr-2 mt-2" aria-hidden="true"></i>
-          Add to cart
-        </span>
-      </div>
-    );
-  });
-  return (
-    <>
-      <Header />
-      <Heading />
-      <Container>
-        <h3 className="title-product align-center">List product</h3>
-        <div className="template-grid">
-          {readerList}
-        </div>
-      </Container>
-      <Footer />
-    </>
-  );
 };
+
+function Home(props) {
+  let history = useHistory();
+  const renderData = dataList && dataList.length > 0 && dataList.map((item) => {
+    return (
+      <Col xl={3}>
+        <div className="wrapper-box">
+          <div className="icon mb-3">
+            <img src={item.img} alt="" />
+          </div>
+          <div className="title">
+            <h3>{item.title}</h3>
+          </div>
+          <div className="content">
+            {item.content}
+          </div>
+        </div>
+      </Col>
+    )
+  })
+  const renderDataBox = dataBox && dataBox.length > 0 && dataBox.map((item) => {
+    return (
+      <Col xl={3}>
+        <div className="render-box">
+          <h3>{item.title1}</h3>
+          <h3>{item.content1}</h3>
+        </div>
+      </Col>
+    )
+  })
+  const renderDataMebo = dataMebo && dataMebo.length > 0 && dataMebo.map((item) => {
+    return (
+      <Col xl={4}>
+        <div className="wrapper-box">
+          <div className="icon mb-3">
+            <img src={item.img1} alt="" />
+          </div>
+        </div>
+      </Col>
+    )
+  })
+  const handleButton = () => {
+    history.push('/')
+  }
+
+
+  return (
+    <MainLayout>
+      <Heading title1="BẠN ĐANG CẦN MEBO TRIỂN KHAI DỊCH VỤ NÀO?" />
+      <section className="main-box mt-5">
+        <Container>
+          <Row>
+            {renderData}
+            <Button onClick={() => { handleButton() }}>Tư vấn nhanh miễn phí</Button>
+          </Row>
+        </Container>
+      </section>
+      <section>
+        <Container>
+          <Heading
+            title1="VÌ SAO BẠN CẦN MEBO?"
+            title2="xây dựng nhận diện thương hiệu"
+            isSub />
+          <div>
+            <Row>
+              <Col xl={6}>
+                <div className="wrapper-box">
+                  <div className="title">
+                    <div>MEBO tự hào là đơn vị thiết kế trẻ trung với ý tưởng mới, táo bạo. Dám thực hiện những điều khác biệt nhất với quyết tâm cao nhất vì mục tiêu tạo ra sản phẩm chất lượng và riêng biệt cho từng khách hàng.</div>
+                  </div>
+                </div>
+              </Col>
+              <Col xl={6}>
+                <div className="icon mb-3">
+                  <img src={Images} alt="" />
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Container>
+      </section>
+      <section>
+        <Row>
+          {renderDataBox}
+        </Row>
+      </section>
+
+      <section>
+        <Container>
+          <Row>
+            {renderDataMebo}
+          </Row>
+        </Container>
+      </section>
+    </MainLayout>
+  );
+}
+
 export default Home;
